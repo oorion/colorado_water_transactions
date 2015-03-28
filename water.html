@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Leaflet Demo</title>
+    <title>CO Water Rights Map</title>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
     <style>
       body,
@@ -9,9 +9,15 @@
         height: 100%;
       }
       #map {
-        width: 100%;
-        height: 100%;
+        /*width: 100%;*/
+        height: 500px;
+        margin-top: 30px;
       }
+
+      h1 {
+       color: steelblue;
+     }
+
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -21,6 +27,7 @@
     <script src="./slider.js"></script>-->
   </head>
   <body>
+    <h1>Colorado Water Rights Transactions Map</h1>
     <script>
       var waterData;
       $.getJSON("https://data.colorado.gov/api/views/i55n-9sba/rows.json", function(json){
@@ -92,10 +99,13 @@
       });
     </script>
 
-    <p>
-      <input type="range" min="1850" max="2022" id="slider">
-      <div id="year"></div>
-    </p>
+    <div>
+       <label for="slider"
+          style="display: inline-block; text-align: right">
+          <span id="year">1900</span>
+       </label>
+       <input type="range" min="1850" max="2022" value="1900" id="slider">
+   </div>
 
     <div id="map"></div>
 
