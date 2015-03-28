@@ -61,14 +61,24 @@
           });
           dataLimit = 20
           for (var i = 0; i < dataLimit; i++) {
-            console.log(selectData[i][32]);
             var data = selectData;
             if (data[i][45][1] && data[i][45][2]) {
               var lat = data[i][45][1];
               var lon = data[i][45][2];
               if (lat && lon) {
                 pointLatLon = [lat, lon];
-                L.marker(pointLatLon).addTo(map);
+                mark = L.marker(pointLatLon).addTo(map);
+                struct_type = data[i][9]
+                name = data[i][10]
+                water_source = data[i][11]
+                county = data[i][14]
+                info = data[i][44][0]
+                popup_string = "<b>" +  name +
+                              "</b><br><b>Source:</b> " + water_source +
+                              "<br><b>Structure:</b> " + struct_type +
+                              "<br><b>County:</b> " + county +
+                              "<br><a href=" + info + ' target="_blank">Info</a>'
+                mark.bindPopup(popup_string);
               }
             }
           }
