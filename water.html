@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet Demo</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <style>
+      body,
+      html {
+        height: 100%;
+      }
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script>
+      var waterData;
+      $.getJSON("https://data.colorado.gov/api/views/i55n-9sba/rows.json", function(json){
+        waterData = json
+
+        // Create starting point for map
+        initialLatLon = [waterData.data[0][45][1], waterData.data[0][45][2]]
+        // Creates the Map
+        var map = L.map('map').setView(initialLatLon, 15);
+
+        // Visualize map using OpenStreetMap
+        L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          type: 'sat',
+          attribution: 'OpenStreetMap and MapQuest',
+          subdomains: '1234'
+        }).addTo(map);
+
+        // Add marker of first object
+        var marker = L.marker(initialLatLon).addTo(map);
+      });
+    </script>
+
+    <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script>
+
+  </body>
+</html>

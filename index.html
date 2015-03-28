@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet Demo</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <style>
+      body,
+      html {
+        height: 100%;
+      }
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+    <!-- this is a link to jsonp which is just json but saved into a javascript variable -->
+    <script src='http://mapsarecool.com/maptime2015/boulder_restaurants.geojson'></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
+
+    <script>
+      var colors = {
+        'bar': '#8e44ad',
+        'cafe': '#e74c3c',
+        'pub ': '#16a085',
+        'restaurant': '#f1c40f'
+      };
+
+      var map = L.map('map').setView([40, -105], 15);
+
+      L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        type: 'map',
+        attribution: 'OpenStreetMap and MapQuest',
+        subdomains: '1234'
+      }).addTo(map);
+
+      var marker = L.marker([40, -105]).addTo(map);
+
+      var popupContent = function(properties) {
+        var content = '<div class="popup">' +
+        '<span class="title">{{name}}</span><br/>' +
+        '{{address}}<br/>' +
+        '<hr/>' +
+        '<span class="title">Amenity</span>: {{amenity}}<br/>' +
+        '<span class="title">Cuisine</span>: {{cuisine}}<br/>' +
+        '</div>';
+        return Handlebars.compile(content)(properties);
+      };
+
+      // example 1
+      // L.geoJson(boulderData).addTo(map);
+
+      // example 2
+      L.geoJson(boulderData, {
+        pointToLayer: function(feature, latlng) {
+          return L.circleMarker(latlng, {
+            color: "white",
+            fillColor: colors[feature.properties.amenity],
+            fillOpacity: .5,
+            radius: 8
+          });
+        },
+        onEachFeature: function(feature, layer) {
+          return layer.bindPopup(popupContent(feature.properties));
+        }
+      }).addTo(map);
+    </script>
+  </body>
+</html>
