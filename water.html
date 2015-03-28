@@ -38,6 +38,18 @@
 
         // Add marker of first object
         var marker = L.marker(initialLatLon).addTo(map);
+
+        //Add marker for all objects
+        dataLimit = 500;
+        for (var i = 0; i < dataLimit; i++) {
+          var data = waterData.data
+          var lat = data[i][45][1]
+          var lon = data[i][45][2]
+          if (lat && lon) {
+            pointLatLon = [lat, lon]
+            L.marker(pointLatLon).addTo(map);
+          }
+        }
       });
     </script>
 
