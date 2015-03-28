@@ -22,12 +22,16 @@
   </head>
   <body>
     <script>
+      var COORDINATES = 45, FIRST = 0, LATITUDE = 1, LONGITUDE = 2;
+      var dataLimit = 20;
       var waterData;
+
       $.getJSON("https://data.colorado.gov/api/views/i55n-9sba/rows.json", function(json){
-        waterData = json
+        var waterData = json;
 
         // Create starting point for map
-        initialLatLon = [waterData.data[0][45][1], waterData.data[0][45][2]]
+        initialLatLon = [waterData.data[FIRST][COORDINATES][LATITUDE], waterData.data[FIRST][COORDINATES][LONGITUDE]];
+
         // Creates the Map
         var map = L.map('map').setView(initialLatLon, 15);
 
@@ -36,7 +40,7 @@
           maxZoom: 18,
           type: 'sat',
           attribution: 'OpenStreetMap and MapQuest',
-          subdomains: '1234'
+          subdomains: '1234',
         }).addTo(map);
 
         // Add marker of first object
@@ -47,37 +51,43 @@
         }
 
         function updateMap(sliderValue, waterData) {
-          var selectData = waterData.data.filter(function(e) {
+          var filteredData = waterData.data.filter(function(e) {
             if (e[32]) {
+
+              // Regex match for the first four numbers, aka: the year
               if (e[32].match(/\d{4}/)) {
-                var year = e[32].match(/\d{4}/)[0];
+                var year = e[32].match(/\d{4}/)[FIRST];
                 return year == sliderValue;
               } else {
                 return false;
               }
+
             } else {
               return false;
             }
           });
-          dataLimit = 20
+
           for (var i = 0; i < dataLimit; i++) {
-            var data = selectData;
-            if (data[i][45][1] && data[i][45][2]) {
-              var lat = data[i][45][1];
-              var lon = data[i][45][2];
+
+            if (filteredData[i][COORDINATES][LATITUDE] && filteredData[i][COORDINATES][LONGITUDE]) {
+
+              var lat = filteredData[i][COORDINATES][LATITUDE];
+              var lon = filteredData[i][COORDINATES][LONGITUDE];
               if (lat && lon) {
-                pointLatLon = [lat, lon];
-                mark = L.marker(pointLatLon).addTo(map);
-                struct_type = data[i][9]
-                name = data[i][10]
-                water_source = data[i][11]
-                county = data[i][14]
-                info = data[i][44][0]
-                popup_string = "<b>" +  name +
-                              "</b><br><b>Source:</b> " + water_source +
-                              "<br><b>Structure:</b> " + struct_type +
-                              "<br><b>County:</b> " + county +
-                              "<br><a href=" + info + ' target="_blank">Info</a>'
+
+                var pointLatLon = [lat, lon];
+                var mark = L.marker(pointLatLon).addTo(map);
+                var struct_type = filteredData[i][9];
+                var name = filteredData[i][10];
+                var water_source = filteredData[i][11];
+                var county = filteredData[i][14];
+                var info = filteredData[i][44][FIRST];
+                var popup_string = "<b>"                     + name +
+                                   "</b><br><b>Source:</b> " + water_source +
+                                   "<br><b>Structure:</b> "  + struct_type +
+                                   "<br><b>County:</b> "     + county +
+                                   "<br><a href="            + info +
+                                   ' target="_blank">Info</a>'
                 mark.bindPopup(popup_string);
               }
             }
