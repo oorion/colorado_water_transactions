@@ -9,15 +9,18 @@
         height: 100%;
       }
       #map {
-        width: 100%;
-        height: 100%;
+        width: 90%;
+        height: 90%;
       }
     </style>
-  </head>
-  <body>
-    <div id="map"></div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <!--<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="./slider.js"></script>-->
+  </head>
+  <body>
     <script>
       var waterData;
       $.getJSON("https://data.colorado.gov/api/views/i55n-9sba/rows.json", function(json){
@@ -39,19 +42,52 @@
         // Add marker of first object
         var marker = L.marker(initialLatLon).addTo(map);
 
-        //Add marker for all objects
-        dataLimit = 500;
-        for (var i = 0; i < dataLimit; i++) {
-          var data = waterData.data
-          var lat = data[i][45][1]
-          var lon = data[i][45][2]
-          if (lat && lon) {
-            pointLatLon = [lat, lon]
-            L.marker(pointLatLon).addTo(map);
+        function updateYear(sliderValue) {
+          $('#year').text(sliderValue);
+        }
+
+        function updateMap(sliderValue, waterData) {
+          var selectData = waterData.data.filter(function(e) {
+            if (e[32]) {
+              if (e[32].match(/\d{4}/)) {
+                var year = e[32].match(/\d{4}/)[0];
+                return year == sliderValue;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          });
+          dataLimit = 20
+          for (var i = 0; i < dataLimit; i++) {
+            console.log(selectData[i][32]);
+            var data = selectData;
+            if (data[i][45][1] && data[i][45][2]) {
+              var lat = data[i][45][1];
+              var lon = data[i][45][2];
+              if (lat && lon) {
+                pointLatLon = [lat, lon];
+                L.marker(pointLatLon).addTo(map);
+              }
+            }
           }
         }
+
+        $('#slider').change(function() {
+          var sliderValue = $(this).val();
+          updateMap(sliderValue, waterData);
+          updateYear(sliderValue);
+        });
       });
     </script>
+
+    <p>
+      <input type="range" min="1850" max="2022" id="slider">
+      <div id="year"></div>
+    </p>
+
+    <div id="map"></div>
 
     <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script>
 
